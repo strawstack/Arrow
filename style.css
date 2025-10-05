@@ -1,0 +1,82 @@
+body {
+
+    display: flex;
+    justify-content: center;
+    
+
+    main {
+
+        max-width: 480px;
+        display: flex;
+        flex-direction: column;
+        row-gap: 20px;
+
+        nav {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        header {
+            display: flex;
+            justify-content: center;
+        }
+
+        aside {
+            .area {
+                display: flex;
+                justify-content: space-evenly;
+            }
+        }
+
+        article {
+            text-align: center;
+        }
+
+        section {
+
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+
+            svg {
+                max-height: 80px;
+
+                    .arrow {
+                        fill: none;
+                        stroke: #333;
+                        stroke-width: 16px;
+                        stroke-linejoin: round;
+                    }
+
+                    .circle {
+                        display: none;
+                        fill: none;
+                        stroke: #333;
+                        stroke-width: 16px;
+                        stroke-linejoin: round;
+                    }
+
+                &.done { /* Cell is done circle fills */
+                    .arrow {
+
+                    }
+
+                    .circle {
+                        fill: #333;
+                    }
+                }
+            }
+
+            &.active { /* Game active circles are shown */
+                svg {
+                    .arrow {
+                        display: none;
+                    }
+
+                    .circle {
+                        display: inline-block;
+                    }
+                }
+            }
+        }
+    }
+}
