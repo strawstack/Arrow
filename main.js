@@ -17,6 +17,7 @@
             render,
             q,
             resetToWaiting,
+            clearUrl,
         } = helper({
             sectionElem
         });
@@ -32,7 +33,9 @@
         const local = JSON.parse(window.localStorage.getItem("arrow"));
         const state = {
             ...{
-                share: null,
+                otheruser: "",
+                url: window.location.href.split("?")[0],
+                username: "",
                 goal: 0,
                 seed: createSeed(),
                 pattern: null,
@@ -53,12 +56,12 @@
 
         // Extract query parameters
         const params = new URLSearchParams(window.location.search);
-        const shareParam = params.get('share');
+        const otheruserParam = params.get('user');
         const goalParam = params.get('goal');
         const seedParam = params.get('seed');
 
         // Assign query params
-        state.share = shareParam;
+        state.otheruser = otheruserParam || "";
         state.goal = parseIntMaybe(goalParam, 0);
         state.seed = parseSeedMaybe(seedParam, "0000");
 
@@ -98,6 +101,7 @@
         });
 
         q(".reset").addEventListener("click", e => {
+            clearUrl();
             if (state.popoverState === null) {
                 setState(s => {
                     s.best = 0;
@@ -118,6 +122,7 @@
         q(".share").addEventListener("click", e => {
             if (state.popoverState === null) {
                 setState(s => {
+                    s.username = q("#username").value;
                     s.popoverState = popoverState.SHARE;
                 });
             }
@@ -129,7 +134,36 @@
                 });
             }
         });
+        q("#username").addEventListener("keyup", e => {
+            if (state.popoverState === popoverState.SHARE) {
+                setState(s => {
+                    s.username = e.target.value;
+                });
+            }
+        });
+        q(".button.url").addEventListener("click", e => {
+            navigator.clipboard.writeText(
+                e.target.innerHTML.replaceAll("&amp;", "&")
+            );
+            q(".copy.msg").classList.add("visible");
+            setTimeout(() => {
+                q(".copy.msg").classList.remove("visible");
+            }, 1500);
+        });
+        q(".button.close").addEventListener("click", e => {
+            setState(s => {
+                s.popoverState = null;
+            });
+        });
+        q(".button.remove").addEventListener("click", e => {
+            clearUrl();
+            setState(s => {
+                s.otheruser = "";
+            });
+        });
 
+        // Initial render
+        setState(s => {});
     }
 
     await main();

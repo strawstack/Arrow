@@ -3,6 +3,18 @@ body {
     display: flex;
     justify-content: center;
     
+    .button {
+        cursor: pointer;
+        border: 1px solid #333;
+        padding: 5px 10px;
+        margin: 5px 0px;
+        border-radius: 4px;
+        transition: background 0.1s;
+
+        &:hover {
+            background: lightgrey;
+        }
+    }
 
     main {
 
@@ -12,15 +24,32 @@ body {
         row-gap: 20px;
         position: relative;
 
-        .button {
-            cursor: pointer;
-            border: 1px solid #333;
-            padding: 5px 10px;
-            border-radius: 4px;
-            transition: background 0.1s;
+        .challenge {
+            display: none;
 
-            &:hover {
-                background: lightgrey;
+            &.visible {
+                display: inline-block;
+            }
+
+            .username.area {
+
+                display: flex;
+                justify-content: flex-start;
+
+                .username {
+                    background: yellow;
+
+                    span {
+                        font-weight: bold;
+                    }
+                }
+            }
+
+
+
+            .remove.area {
+                display: flex;
+                justify-content: flex-start;
             }
         }
 
@@ -57,20 +86,20 @@ body {
             svg {
                 max-height: 80px;
 
-                    .arrow {
-                        fill: none;
-                        stroke: #333;
-                        stroke-width: 16px;
-                        stroke-linejoin: round;
-                    }
+                .arrow {
+                    fill: none;
+                    stroke: #333;
+                    stroke-width: 16px;
+                    stroke-linejoin: round;
+                }
 
-                    .circle {
-                        display: none;
-                        fill: none;
-                        stroke: #333;
-                        stroke-width: 16px;
-                        stroke-linejoin: round;
-                    }
+                .circle {
+                    display: none;
+                    fill: none;
+                    stroke: #333;
+                    stroke-width: 16px;
+                    stroke-linejoin: round;
+                }
 
                 &.done { /* Cell is done circle fills */
                     .arrow {
@@ -80,6 +109,12 @@ body {
 
                     .circle {
                         display: none;
+                    }
+                }
+
+                &.goal {
+                    .arrow, .circle {
+                        fill: lightyellow;
                     }
                 }
             }
@@ -120,13 +155,41 @@ body {
             border: 2px solid #333;
             border-radius: 4px;
             position: relative;
-            width: 400px;
+            width: 500px;
             height: 600px;
             padding: 20px;
 
+            .button.url {
+                border: 1px solid #333;
+                padding: 5px 10px;
+                margin: 5px 0px;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background 0.1s;
+
+                &:hover {
+                    background: lightgrey;
+                }
+            }
+
             &.share {
                 &.visible {
-                    display: inline-block;
+                    display: flex;
+                    flex-direction: column;
+                    row-gap: 20px;
+                }
+
+                .copy.msg {
+                    opacity: 0;
+                    transition: opacity 0.2s;
+                    &.visible {
+                        opacity: 1;
+                    }
+                }
+
+                .close.area {
+                    display: flex;
+                    justify-content: flex-end;
                 }
             }
 

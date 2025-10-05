@@ -116,6 +116,10 @@ function helper({
         });
     }
 
+    function clearUrl() {
+        window.location.href = window.location.href.split("?")[0];
+    }
+
     function render(oldState, state) {
 
         // State Transitions
@@ -129,14 +133,39 @@ function helper({
             }
         }
 
+        if (state.otheruser) {
+            q(".challenge").classList.add("visible");
+            q(".challenge .username>span").innerHTML = state.otheruser;
+            q(".challenge .score>span").innerHTML = state.goal;
+            q(".challenge .seed>span").innerHTML = state.seed;
+
+            state.arrows.slice(0, state.goal).map(a => {
+                a.classList.add("goal");
+            });
+
+        } else {
+            q(".challenge").classList.remove("visible");
+        }
+
         if (state.popoverState === popoverState.SHARE) {
+            q(".button.url").innerHTML = `${state.url}?user=${state.username}&goal=${state.best}&seed=${state.seed}`;
+            q(".share .score>span").innerHTML = state.best;
+            q(".share .seed>span").innerHTML = state.seed;
             q(".overlay").classList.add("visible");
             q(".popover.share").classList.add("visible");
+        } else {
+            q(".popover.share").classList.remove("visible");
         }
         if (state.popoverState === popoverState.SETTINGS) {
             q(".overlay").classList.add("visible");
             q(".popover.settings").classList.add("visible");
-        }        
+        } else {
+            q(".popover.settings").classList.remove("visible");
+        }
+
+        if (state.popoverState === null) {
+            q(".overlay").classList.remove("visible");
+        }
 
         // Show completed arrows as game progresses
         if (oldState.progress + 1 === state.progress) {
@@ -170,5 +199,6 @@ function helper({
         copyState,
         q,
         resetToWaiting,
+        clearUrl,
     };
 }
