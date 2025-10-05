@@ -80,6 +80,12 @@ function helper({
     const gameState = {
         "WAITING": 0, // New page game ready to begin
         "ACTIVE": 1, // Game in session
+        "RESET": 2, // Game is resetting
+    };
+
+    const popoverState = {
+        "SHARE": 0,
+        "SETTINGS": 1
     };
 
     function checkInput(state, playerInput) {
@@ -96,25 +102,58 @@ function helper({
         return newState;
     }
 
+    function q(selector) {
+        return document.querySelector(selector);
+    }
+
+    function resetToWaiting(setState) {
+        setState(s => {
+            s.progress = 0;
+            s.gameState = gameState.RESET;
+        });
+        setState(s => {
+            s.gameState = gameState.WAITING;
+        });
+    }
+
     function render(oldState, state) {
 
+        // State Transitions
         // Add class to toggle circles and arrows
         if (oldState.gameState === gameState.WAITING && state.gameState === gameState.ACTIVE) {
             sectionElem.classList.add("active");
-        } else if (oldState.gameState === gameState.ACTIVE && state.gameState === gameState.WAITING) {
+        } else if (oldState.gameState === gameState.RESET && state.gameState === gameState.WAITING) {
             sectionElem.classList.remove("active");
             for (let arrow of state.arrows) {
                 arrow.classList.remove("done");
             }
         }
 
-        // Show comopleted arrows as game progresses
+        if (state.popoverState === popoverState.SHARE) {
+            q(".overlay").classList.add("visible");
+            q(".popover.share").classList.add("visible");
+        }
+        if (state.popoverState === popoverState.SETTINGS) {
+            q(".overlay").classList.add("visible");
+            q(".popover.settings").classList.add("visible");
+        }        
+
+        // Show completed arrows as game progresses
         if (oldState.progress + 1 === state.progress) {
             state.arrows[oldState.progress].classList.add("done");
         }
 
-        console.log("render")
+        // Track best progress
+        q(".count>span").innerHTML = state.progress;
+        if (state.progress > state.best) {
+            state.best = state.progress;
+            q(".best>span").innerHTML = state.best;
+        }
 
+        // Reset
+        if (state.gameState === gameState.RESET) {
+            q(".best>span").innerHTML = state.best;
+        }
     }
 
     return {
@@ -126,7 +165,10 @@ function helper({
         symbolToDir,
         checkInput,
         gameState,
+        popoverState,
         render,
         copyState,
+        q,
+        resetToWaiting,
     };
 }

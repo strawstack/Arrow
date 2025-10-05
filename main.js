@@ -11,9 +11,12 @@
             createArrows,
             symbolToDir,
             gameState,
+            popoverState,
             checkInput,
             copyState,
             render,
+            q,
+            resetToWaiting,
         } = helper({
             sectionElem
         });
@@ -35,7 +38,9 @@
                 pattern: null,
                 arrows: null,
                 progress: 0,
-                gameState: gameState.WAITING
+                best: 0,
+                gameState: gameState.WAITING,
+                popoverState: null
             },
             ...local
         };
@@ -76,21 +81,55 @@
                 "ArrowDown": true,
                 "ArrowLeft": true,
             };
-            if (e.key in key_lookup) {
+            // Deliver input to game unless 
+            // key not rechognized, or
+            // popover menu is shown
+            if (state.popoverState === null && e.key in key_lookup) {
                 e.preventDefault();
                 setState(s => {
                     s.gameState = gameState.ACTIVE;
                     if (checkInput(s, symbolToDir(e.key))) {
                         s.progress += 1;
                     } else {
-                        s.gameState = gameState.WAITING;
-                        s.progress = 0;
+                        resetToWaiting(setState);
                     }
                 });
             }
-
-            console.log(state)
         });
+
+        q(".reset").addEventListener("click", e => {
+            if (state.popoverState === null) {
+                setState(s => {
+                    s.best = 0;
+                    s.progress = 0;
+                });
+                resetToWaiting(setState);
+            };
+        });
+        q(".regen").addEventListener("click", e => {
+            if (state.popoverState === null) {
+                const value = confirm("Are you sure you would like to generate a new pattern?");
+                if (value) {
+                    const existing = window.location.href.split("?")[0];
+                    window.location.href = `${existing}?seed=${createSeed()}`;
+                }
+            }
+        });
+        q(".share").addEventListener("click", e => {
+            if (state.popoverState === null) {
+                setState(s => {
+                    s.popoverState = popoverState.SHARE;
+                });
+            }
+        });
+        q(".settings").addEventListener("click", e => {
+            if (state.popoverState === null) {
+                setState(s => {
+                    s.popoverState = popoverState.SETTINGS;
+                });
+            }
+        });
+
     }
 
     await main();

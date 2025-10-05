@@ -10,6 +10,19 @@ body {
         display: flex;
         flex-direction: column;
         row-gap: 20px;
+        position: relative;
+
+        .button {
+            cursor: pointer;
+            border: 1px solid #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background 0.1s;
+
+            &:hover {
+                background: lightgrey;
+            }
+        }
 
         nav {
             display: flex;
@@ -24,8 +37,12 @@ body {
         aside {
             .area {
                 display: flex;
-                justify-content: space-evenly;
+                justify-content: space-between;
             }
+        }
+
+        .count, .best {
+            text-align: end;
         }
 
         article {
@@ -80,4 +97,46 @@ body {
             }
         }
     }
+    
+    .overlay {
+        background: rgba(33, 33, 33, 0.5);
+        backdrop-filter: blur(2px);
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        left: 0px;
+        bottom: 0px;
+        display: none;
+
+        &.visible {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popover {
+            display: none;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 4px;
+            position: relative;
+            width: 400px;
+            height: 600px;
+            padding: 20px;
+
+            &.share {
+                &.visible {
+                    display: inline-block;
+                }
+            }
+
+            &.settings {
+                &.visible {
+                    display: inline-block;
+                }
+            }
+        }
+    }
+
+
 }
