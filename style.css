@@ -57,25 +57,26 @@ body {
 
                 &.done { /* Cell is done circle fills */
                     .arrow {
-
+                        display: inline-block;
+                        fill: #333;
                     }
 
                     .circle {
-                        fill: #333;
+                        display: none;
                     }
                 }
             }
 
             &.active { /* Game active circles are shown */
-                svg {
-                    .arrow {
-                        display: none;
-                    }
-
-                    .circle {
-                        display: inline-block;
-                    }
+                
+                .arrow {
+                    display: none;
                 }
+
+                .circle {
+                    display: inline-block;
+                }
+                
             }
         }
     }

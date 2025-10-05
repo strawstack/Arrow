@@ -1,4 +1,6 @@
-function helper() {
+function helper({
+    sectionElem
+}) {
 
     const enc = new TextEncoder();
     const dec = new TextDecoder("utf-8");
@@ -11,7 +13,18 @@ function helper() {
 
     function parseIntMaybe(maybeInt, defaultValue) {
         try {
-            return parseInt(maybeInt);
+            const num = parseInt(maybeInt);
+            if (isNaN(num)) throw Error("Not a number");
+            return num;
+        } catch(e) {
+            return defaultValue;
+        }
+    }
+
+    function parseSeedMaybe(maybeSeed, defaultValue) {
+        try {
+            if (!maybeSeed) throw Error("Seed is null");
+            return maybeSeed;
         } catch(e) {
             return defaultValue;
         }
@@ -31,23 +44,89 @@ function helper() {
         const pattern = (await sha256(seed))
             .split("")
             .map(x => parseInt(x) % 4)
-            .slice(0, 60)
-            .map(x => makeArrow(x));
+            .slice(0, 60);
         return pattern;
+    }
+
+    function createArrows(pattern) {
+        return pattern.map(x => makeArrow(x));
     }
 
     function makeArrow(dir) {
         const dir_lookup = [270, 0, 90, 180];
         const template = document.querySelector(`#arrow`);
-        const clone = template.content.cloneNode(true);
-        clone.children[0].style.transform = `rotate(${dir_lookup[dir]}deg)`;
+        const clone = template.content.firstElementChild.cloneNode(true);
+        clone.style.transform = `rotate(${dir_lookup[dir]}deg)`;
         return clone;
+    }
+
+    function symbolToDir(symbol) {
+        return {
+            0: "UP",
+            1: "RIGHT",
+            2: "DOWN",
+            3: "LEFT",
+            "w": "UP",
+            "a": "LEFT",
+            "s": "DOWN",
+            "d": "RIGHT",
+            "ArrowUp": "UP",
+            "ArrowRight": "RIGHT",
+            "ArrowDown": "DOWN",
+            "ArrowLeft": "LEFT",
+        }[symbol];
+    }
+
+    const gameState = {
+        "WAITING": 0, // New page game ready to begin
+        "ACTIVE": 1, // Game in session
+    };
+
+    function checkInput(state, playerInput) {
+        const correctDir = symbolToDir(state.pattern[state.progress]);
+        return correctDir === playerInput;
+    }
+
+    function copyState(state) {
+        const { arrows } = state;
+        state.arrows = null;
+        const newState = JSON.parse(JSON.stringify(state));
+        state.arrows = arrows;
+        newState.arrows = arrows;
+        return newState;
+    }
+
+    function render(oldState, state) {
+
+        // Add class to toggle circles and arrows
+        if (oldState.gameState === gameState.WAITING && state.gameState === gameState.ACTIVE) {
+            sectionElem.classList.add("active");
+        } else if (oldState.gameState === gameState.ACTIVE && state.gameState === gameState.WAITING) {
+            sectionElem.classList.remove("active");
+            for (let arrow of state.arrows) {
+                arrow.classList.remove("done");
+            }
+        }
+
+        // Show comopleted arrows as game progresses
+        if (oldState.progress + 1 === state.progress) {
+            state.arrows[oldState.progress].classList.add("done");
+        }
+
+        console.log("render")
+
     }
 
     return {
         createSeed,
         parseIntMaybe,
+        parseSeedMaybe,
         createPattern,
-        makeArrow
+        createArrows,
+        symbolToDir,
+        checkInput,
+        gameState,
+        render,
+        copyState,
     };
 }
